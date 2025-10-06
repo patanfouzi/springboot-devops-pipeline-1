@@ -1,17 +1,19 @@
-- name: Ensure files dir exists
+- name: Ensure app directory exists
   file:
-    path: "{{ role_path }}/files"
+    path: /opt/spring-petclinic
     state: directory
     mode: '0755'
+    owner: ubuntu
+    group: ubuntu
 
-- name: Copy WAR to Tomcat webapps
+- name: Copy Spring Petclinic JAR to server
   copy:
     src: files/spring-petclinic.jar
     dest: /opt/spring-petclinic/spring-petclinic.jar
-    owner: root
-    group: root
-    mode: '0644'
-  notify: Restart Tomcat
+    owner: ubuntu
+    group: ubuntu
+    mode: '0755'
+  notify: Start Spring Boot app
 
 handlers:
   - name: Start Spring Boot app
