@@ -1,8 +1,6 @@
 name: Minimal Secure DevOps Pipeline
 
 on:
-  push:
-    branches: [ "main" ]
   workflow_dispatch:
 
 env:
@@ -59,6 +57,11 @@ jobs:
         with:
           terraform_version: "1.9.6"
 
+      - name: Setup Backend
+        run: |
+          chmod +x ./create-backend.sh
+          ./create-backend.sh
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -68,7 +71,7 @@ jobs:
 
       - name: Terraform init
         working-directory: ./terraform
-        run: terraform init -backend-config="bucket=${{ secrets.S3_BUCKET }}" -backend-config="key=secure-devops-pipeline-minimal/terraform.tfstate" -backend-config="region=${{ env.AWS_REGION }}"
+        run: terraform init
 
       - name: Terraform apply
         working-directory: ./terraform
