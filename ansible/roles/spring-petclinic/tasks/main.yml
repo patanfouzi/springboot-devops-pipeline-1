@@ -6,8 +6,8 @@
 
 - name: Copy WAR to Tomcat webapps
   copy:
-    src: files/spring-petclinic.war
-    dest: /var/lib/tomcat9/webapps/spring-petclinic.war
+    src: files/spring-petclinic.jar
+    dest: /opt/spring-petclinic/spring-petclinic.jar
     owner: root
     group: root
     mode: '0644'
