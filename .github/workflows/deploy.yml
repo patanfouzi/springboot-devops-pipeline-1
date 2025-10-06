@@ -69,10 +69,7 @@ jobs:
 
       - name: Terraform init
         working-directory: ./terraform
-        run: terraform init \
-          -backend-config="bucket=${{ secrets.S3_BUCKET }}" \
-          -backend-config="key=secure-devops-pipeline-minimal/terraform.tfstate" \
-          -backend-config="region=${{ env.AWS_REGION }}"
+        run: terraform init -backend-config="bucket=${{ secrets.S3_BUCKET }}" -backend-config="key=secure-devops-pipeline-minimal/terraform.tfstate" -backend-config="region=${{ env.AWS_REGION }}"
 
       - name: Terraform apply
         working-directory: ./terraform
