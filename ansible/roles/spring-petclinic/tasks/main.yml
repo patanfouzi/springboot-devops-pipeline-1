@@ -1,0 +1,20 @@
+- name: Ensure files dir exists
+  file:
+    path: "{{ role_path }}/files"
+    state: directory
+    mode: '0755'
+
+- name: Copy WAR to Tomcat webapps
+  copy:
+    src: files/spring-petclinic.war
+    dest: /var/lib/tomcat9/webapps/spring-petclinic.war
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart Tomcat
+
+handlers:
+  - name: Restart Tomcat
+    service:
+      name: tomcat9
+      state: restarted
