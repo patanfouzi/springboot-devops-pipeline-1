@@ -29,13 +29,12 @@ jobs:
           cd spring-petclinic
           ./mvnw -B -DskipTests package
           mkdir -p ../secure-devops-pipeline-minimal/ansible/roles/spring-petclinic/files
-          cp target/*.war ../secure-devops-pipeline-minimal/ansible/roles/spring-petclinic/files/spring-petclinic.war
-
+          cp target/*.jar ../secure-devops-pipeline-minimal/ansible/roles/spring-petclinic/files/spring-petclinic.jar
       - name: Upload WAR artifact
         uses: actions/upload-artifact@v4
         with:
           name: petclinic-war
-          path: ansible/roles/spring-petclinic/files/spring-petclinic.war
+          path: ansible/roles/spring-petclinic/files/spring-petclinic.jar
 
   infra:
     name: Terraform apply
