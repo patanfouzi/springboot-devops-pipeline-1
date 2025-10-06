@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up Java
@@ -28,8 +28,11 @@ jobs:
           git clone https://github.com/spring-projects/spring-petclinic.git
           cd spring-petclinic
           ./mvnw -B -DskipTests package
-          mkdir -p ../secure-devops-pipeline-minimal/ansible/roles/spring-petclinic/files
-          cp target/*.jar ../secure-devops-pipeline-minimal/ansible/roles/spring-petclinic/files/spring-petclinic.jar
+          # Copy JAR into your repo's Ansible role files folder
+          mkdir -p ../ansible/roles/spring-petclinic/files
+          cp target/*.jar ../ansible/roles/spring-petclinic/files/spring-petclinic.jar
+          # Verify JAR is copied
+          ls -l ../ansible/roles/spring-petclinic/files/
 
       - name: Upload JAR artifact
         uses: actions/upload-artifact@v4
@@ -43,7 +46,7 @@ jobs:
     needs: build-jar
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Download JAR artifact
@@ -66,7 +69,7 @@ jobs:
 
       - name: Terraform init
         working-directory: ./terraform
-        run: terraform init -backend-config="bucket=${{ secrets.S3_BUCKET }}" -backend-config="key=secure-devops-pipeline-minimal/terraform.tfstate" -backend-config="region=${{ env.AWS_REGION }}"
+        run: terraform init
 
       - name: Terraform apply
         working-directory: ./terraform
@@ -76,7 +79,7 @@ jobs:
         working-directory: ./terraform
         run: terraform output -json > tfoutput.json
 
-      - name: Upload tfoutput
+      - name: Upload Terraform output
         uses: actions/upload-artifact@v4
         with:
           name: tfoutput
@@ -88,7 +91,7 @@ jobs:
     needs: infra
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Download JAR artifact
@@ -97,13 +100,13 @@ jobs:
           name: petclinic-jar
           path: ansible/roles/spring-petclinic/files/
 
-      - name: Download tfoutput
+      - name: Download Terraform output
         uses: actions/download-artifact@v4
         with:
           name: tfoutput
           path: terraform/
 
-      - name: Generate inventory
+      - name: Generate Ansible inventory
         run: |
           python3 scripts/tf-to-inventory.py terraform/tfoutput.json > ansible/inventory.ini
           cat ansible/inventory.ini
@@ -120,7 +123,7 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
 
-      - name: Wait for EC2 SSH
+      - name: Wait for EC2 SSH to be ready
         run: sleep 30
 
       - name: Run Ansible playbook
