@@ -1,6 +1,7 @@
 ---
 - name: Start Spring Boot app
   shell: |
+    set -e
     echo "🔍 Checking if JAR exists..."
     if [ ! -f /opt/spring-petclinic/spring-petclinic.jar ]; then
       echo "❌ JAR not found at /opt/spring-petclinic/spring-petclinic.jar"
@@ -8,18 +9,13 @@
     fi
 
     echo "🧠 Checking Java..."
-    if ! command -v java >/dev/null 2>&1; then
-      echo "❌ Java not found in PATH"
-      exit 1
-    fi
+    java -version || (echo "❌ Java not found in PATH" && exit 1)
 
     echo "🛑 Stopping any existing process..."
     pkill -f spring-petclinic || true
 
     echo "🚀 Starting Spring Boot app..."
     nohup java -jar /opt/spring-petclinic/spring-petclinic.jar > /opt/spring-petclinic/app.log 2>&1 &
-
-    echo "🕐 Waiting for startup..."
     sleep 10
 
     echo "📋 Checking process..."
@@ -32,3 +28,4 @@
     fi
   args:
     executable: /bin/bash
+
