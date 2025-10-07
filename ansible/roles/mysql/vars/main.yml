@@ -1,0 +1,4 @@
+mysql_root_password: "StrongRootPassword123!"
+mysql_database: "petclinicdb"
+mysql_user: "petclinicuser"
+mysql_password: "StrongUserPassword123!"
