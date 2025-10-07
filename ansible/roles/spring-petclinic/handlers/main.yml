@@ -1,0 +1,7 @@
+---
+- name: Start Spring Boot app
+  shell: |
+    pkill -f spring-petclinic || true
+    nohup java -jar /opt/spring-petclinic/spring-petclinic.jar > /opt/spring-petclinic/app.log 2>&1 &
+  args:
+    executable: /bin/bash
