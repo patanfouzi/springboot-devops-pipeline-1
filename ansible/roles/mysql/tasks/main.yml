@@ -15,15 +15,29 @@
     state: started
     enabled: true
 
-# Ensure root user uses mysql_native_password
+# Use unix_socket authentication for root initially
+- name: Set MySQL root password using unix_socket
+  community.mysql.mysql_user:
+    name: root
+    host: localhost
+    password: "{{ mysql_root_password }}"
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    check_implicit_admin: true
+    state: present
+
+# Ensure root uses mysql_native_password (switch auth plugin)
 - name: Ensure root user uses mysql_native_password
   community.mysql.mysql_user:
     name: root
     host: localhost
     plugin: mysql_native_password
     password: "{{ mysql_root_password }}"
-    state: present
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
     login_unix_socket: /var/run/mysqld/mysqld.sock
+    check_implicit_admin: true
+    state: present
+
 
 # Create application database
 - name: Create application database
