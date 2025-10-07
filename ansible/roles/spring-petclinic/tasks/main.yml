@@ -21,4 +21,5 @@
     owner: ubuntu
     group: ubuntu
     mode: '0755'
-  notify: Start Spring Boot app
+
+- import_tasks: systemd.yml
