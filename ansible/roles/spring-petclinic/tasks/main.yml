@@ -1,3 +1,4 @@
+---
 - name: Ensure app directory exists
   file:
     path: /opt/spring-petclinic
@@ -14,13 +15,3 @@
     group: ubuntu
     mode: '0755'
   notify: Start Spring Boot app
-
-handlers:
-  - name: Start Spring Boot app
-    shell: |
-      # Stop existing app if running
-      pkill -f spring-petclinic || true
-      # Start app in background
-      nohup java -jar /opt/spring-petclinic/spring-petclinic.jar > /opt/spring-petclinic/app.log 2>&1 &
-    args:
-      executable: /bin/bash
