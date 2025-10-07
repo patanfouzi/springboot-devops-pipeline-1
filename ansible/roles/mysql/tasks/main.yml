@@ -3,59 +3,64 @@
   apt:
     update_cache: yes
 
-- name: Ensure Python3 pip is installed
+# Ensure Python MySQL library is installed for Ansible
+- name: Install required Python packages
+  become: yes
   apt:
     name: python3-pip
     state: present
     update_cache: yes
 
-- name: Install PyMySQL for MySQL modules
+- name: Install PyMySQL for Ansible MySQL module
+  become: yes
   pip:
     name: PyMySQL
+    executable: pip3
 
+# Install MySQL server
 - name: Install MySQL server
+  become: yes
   apt:
     name: mysql-server
     state: present
+    update_cache: yes
 
-- name: Ensure MySQL service is running
+# Ensure MySQL service is running
+- name: Start and enable MySQL service
+  become: yes
   service:
     name: mysql
     state: started
-    enabled: true
+    enabled: yes
 
-- name: Set root password
+# Set root password and configure authentication plugin
+- name: Set root password and auth plugin
   community.mysql.mysql_user:
     name: root
     host_all: true
     password: "{{ mysql_root_password }}"
     priv: "*.*:ALL"
     state: present
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    plugin: mysql_native_password
 
-- name: Create application database
-  mysql_db:
+# Create your application database
+- name: Create app database
+  community.mysql.mysql_db:
     name: "{{ mysql_database }}"
     state: present
-    encoding: utf8mb4
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    login_host: localhost
 
-- name: Create application user
-  mysql_user:
+# Create app user
+- name: Create application MySQL user
+  community.mysql.mysql_user:
     name: "{{ mysql_user }}"
     password: "{{ mysql_password }}"
     priv: "{{ mysql_database }}.*:ALL"
     host: "%"
     state: present
-
-- name: Allow remote connections
-  lineinfile:
-    path: /etc/mysql/mysql.conf.d/mysqld.cnf
-    regexp: '^bind-address'
-    line: 'bind-address = 0.0.0.0'
-    notify: Restart MySQL
-
-- name: Ensure MySQL is listening on all interfaces
-  ufw:
-    rule: allow
-    port: 3306
-    proto: tcp
-
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    login_host: localhost
