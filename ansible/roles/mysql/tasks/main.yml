@@ -1,0 +1,51 @@
+---
+- name: Update apt cache
+  apt:
+    update_cache: yes
+
+- name: Install MySQL server
+  apt:
+    name: mysql-server
+    state: present
+
+- name: Ensure MySQL service is running
+  service:
+    name: mysql
+    state: started
+    enabled: true
+
+- name: Set root password
+  mysql_user:
+    name: root
+    host_all: true
+    password: "{{ mysql_root_password }}"
+    priv: "*.*:ALL"
+    state: present
+
+- name: Create application database
+  mysql_db:
+    name: "{{ mysql_database }}"
+    state: present
+    encoding: utf8mb4
+
+- name: Create application user
+  mysql_user:
+    name: "{{ mysql_user }}"
+    password: "{{ mysql_password }}"
+    priv: "{{ mysql_database }}.*:ALL"
+    host: "%"
+    state: present
+
+- name: Allow remote connections
+  lineinfile:
+    path: /etc/mysql/mysql.conf.d/mysqld.cnf
+    regexp: '^bind-address'
+    line: 'bind-address = 0.0.0.0'
+    notify: Restart MySQL
+
+- name: Ensure MySQL is listening on all interfaces
+  ufw:
+    rule: allow
+    port: 3306
+    proto: tcp
+
