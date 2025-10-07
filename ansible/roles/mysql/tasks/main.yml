@@ -42,13 +42,6 @@
     state: present
     login_unix_socket: /var/run/mysqld/mysqld.sock
 
-# Copy initial Petclinic schema file (optional)
-- name: Copy Petclinic schema file
-  copy:
-    src: files/petclinic_schema.sql
-    dest: /tmp/petclinic_schema.sql
-  when: petclinic_import_schema | default(true)
-
 # Import schema into database
 - name: Import Petclinic schema into database
   community.mysql.mysql_db:
