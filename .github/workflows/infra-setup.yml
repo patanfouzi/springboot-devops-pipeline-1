@@ -1,12 +1,14 @@
 on:
   workflow_dispatch:
 
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  TF_DIR: terraform
+
+
 jobs:
   infrastructure:
     runs-on: ubuntu-latest
-    env:
-      AWS_REGION: ${{ secrets.AWS_REGION }}
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -24,18 +26,23 @@ jobs:
           terraform_version: 1.9.5
 
       - name: Initialize Terraform
+        working-directory: ./terraform
         run: terraform init
 
       - name: Validate Terraform
+        working-directory: ./terraform
         run: terraform validate
 
       - name: Plan Terraform
+        working-directory: ./terraform
         run: terraform plan -out=tfplan
 
       - name: Apply Terraform
-        run: terraform apply -auto-approve tfplan
+        working-directory: ./terraform
+        run: terraform apply -auto-approve tfplan -var="key_name=${{ secrets.AWS_KEY_NAME }}"
 
       - name: Export Terraform Output
+        working-directory: ./terraform
         run: terraform output -json > tfoutput.json
 
       - name: Upload tfoutput.json as artifact
