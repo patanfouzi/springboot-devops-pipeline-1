@@ -6,6 +6,7 @@ if len(sys.argv) < 2:
     sys.exit(1)
 
 obj = json.load(open(sys.argv[1]))
+
 # Expect output name ec2_public_ip
 if 'ec2_public_ip' in obj:
     ip = obj['ec2_public_ip']['value']
@@ -13,6 +14,10 @@ else:
     # fallback: take first value
     first = next(iter(obj.values()))
     ip = first.get('value')
+
+# If ip is a list, take the first element
+if isinstance(ip, list):
+    ip = ip[0]
 
 print("[all]")
 print(f"{ip} ansible_user=ubuntu")
