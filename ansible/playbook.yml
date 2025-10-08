@@ -1,16 +1,7 @@
----
-- name: Configure App Server and Deploy Petclinic
-  hosts: app
+- name: Configure app server and deploy Petclinic
+  hosts: all
   become: true
   roles:
     - docker
     - tomcat
     - spring-petclinic
-
-- name: Configure MySQL Server
-  hosts: mysql
-  become: true
-  roles:
-    - mysql
-
-
