@@ -1,4 +1,0 @@
-mysql_root_password: "Root@12345"
-mysql_database: "petclinic_db"
-mysql_user: "petclinic_user"
-mysql_password: "Petclinic@123"
