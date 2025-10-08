@@ -14,6 +14,15 @@
     owner: ubuntu
     group: ubuntu
 
+- name: Generate application.properties dynamically
+  template:
+    src: application.properties.j2
+    dest: /opt/spring-petclinic/application.properties
+    owner: ubuntu
+    group: ubuntu
+    mode: '0644'
+
+
 - name: Copy Spring Petclinic JAR to server
   copy:
     src: files/spring-petclinic.jar
