@@ -33,6 +33,7 @@ jobs:
           cp target/*.jar ../ansible/roles/spring-petclinic/files/spring-petclinic.jar
           # Verify JAR is copied
           ls -l ../ansible/roles/spring-petclinic/files/
+
       - name: Upload JAR artifact
         uses: actions/upload-artifact@v4
         with:
@@ -71,13 +72,14 @@ jobs:
         run: |
           chmod +x ./create-backend.sh
           ./create-backend.sh
+
       - name: Terraform init
         working-directory: ./terraform
         run: terraform init -backend-config="bucket=${{ secrets.S3_BUCKET }}" -backend-config="key=secure-devops-pipeline-minimal/terraform.tfstate" -backend-config="region=${{ env.AWS_REGION }}"
 
       - name: Terraform apply
         working-directory: ./terraform
-        run: terraform apply -auto-approve -lock=false -var="key_name=${{ secrets.AWS_KEY_NAME }}"
+        run: terraform apply -auto-approve -var="key_name=${{ secrets.AWS_KEY_NAME }}"
 
       - name: Save Terraform output
         working-directory: ./terraform
@@ -114,21 +116,25 @@ jobs:
         run: |
           python3 scripts/tf-to-inventory.py terraform/tfoutput.json > ansible/inventory.ini
           cat ansible/inventory.ini
+
       - name: Install Ansible
         run: |
           sudo apt-get update
           sudo apt-get install -y python3-pip
           pip3 install ansible
+
       - name: Add SSH key
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
+
       - name: Disable host key checking   
         run: |
           echo "Host *" > ~/.ssh/config
           echo "    StrictHostKeyChecking no" >> ~/.ssh/config
           chmod 600 ~/.ssh/config
+
       - name: Wait for EC2 SSH to be ready
         run: sleep 30
 
