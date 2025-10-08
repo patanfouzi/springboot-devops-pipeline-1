@@ -17,7 +17,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Java
+      - name: Set up Java 17
         uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -28,10 +28,8 @@ jobs:
           git clone https://github.com/spring-projects/spring-petclinic.git
           cd spring-petclinic
           ./mvnw -B -DskipTests package
-          # Copy JAR into your repo's Ansible role files folder
           mkdir -p ../ansible/roles/spring-petclinic/files
           cp target/*.jar ../ansible/roles/spring-petclinic/files/spring-petclinic.jar
-          # Verify JAR is copied
           ls -l ../ansible/roles/spring-petclinic/files/
 
       - name: Upload JAR artifact
@@ -60,7 +58,6 @@ jobs:
         with:
           terraform_version: "1.9.6"
 
-
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -75,7 +72,10 @@ jobs:
 
       - name: Terraform init
         working-directory: ./terraform
-        run: terraform init -backend-config="bucket=${{ secrets.S3_BUCKET }}" -backend-config="key=secure-devops-pipeline-minimal/terraform.tfstate" -backend-config="region=${{ env.AWS_REGION }}"
+        run: terraform init \
+          -backend-config="bucket=${{ secrets.S3_BUCKET }}" \
+          -backend-config="key=secure-devops-pipeline-minimal/terraform.tfstate" \
+          -backend-config="region=${{ env.AWS_REGION }}"
 
       - name: Terraform apply
         working-directory: ./terraform
@@ -129,7 +129,7 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
 
-      - name: Disable host key checking   
+      - name: Disable host key checking
         run: |
           echo "Host *" > ~/.ssh/config
           echo "    StrictHostKeyChecking no" >> ~/.ssh/config
@@ -138,15 +138,17 @@ jobs:
       - name: Wait for EC2 SSH to be ready
         run: sleep 30
 
-      - name: Run Ansible playbook
+      - name: Deploy Petclinic with dynamic MySQL
         working-directory: ./ansible
         run: |
+          # Get MySQL public IP from Terraform output
           MYSQL_IP=$(jq -r '.mysql_public_ip.value' terraform/tfoutput.json)
-          ansible-playbook -i inventory.ini playbook.yml --private-key ~/.ssh/id_rsa \
-          -e "mysql_host=$MYSQL_IP" -vv
-
           
+          # Run Ansible playbook with variables
+          ansible-playbook -i inventory.ini playbook.yml --private-key ~/.ssh/id_rsa \
+            -e "mysql_host=$MYSQL_IP mysql_user=petclinic_user mysql_password=Petclinic@123" -vv
+
       - name: Show EC2 Public IP
         run: |
-          IP=$(cat terraform/tfoutput.json | jq -r '.ec2_public_ip.value')
+          IP=$(jq -r '.ec2_public_ip.value' terraform/tfoutput.json)
           echo "Spring Petclinic will be available at: http://$IP:8080"
