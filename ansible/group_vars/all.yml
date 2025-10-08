@@ -1,0 +1,3 @@
+mysql_database: "petclinic_db"
+mysql_user: "petclinic_user"
+mysql_password: "Petclinic@123"
