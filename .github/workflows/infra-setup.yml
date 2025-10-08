@@ -30,6 +30,7 @@ jobs:
           ./mvnw -B -DskipTests package
           mkdir -p ../ansible/roles/spring-petclinic/files
           cp target/*.jar ../ansible/roles/spring-petclinic/files/spring-petclinic.jar
+          cp src/main/resources/application.properties ../ansible/roles/spring-petclinic/files/application.properties
           ls -l ../ansible/roles/spring-petclinic/files/
 
       - name: Upload JAR artifact
