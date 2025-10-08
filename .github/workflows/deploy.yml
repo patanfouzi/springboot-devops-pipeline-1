@@ -112,11 +112,13 @@ jobs:
           name: tfoutput
           path: terraform/
 
-      - name: Generate Ansible inventory and vars
+      - name: Run Ansible playbook
+        working-directory: ./ansible
         run: |
-          python3 scripts/tf-to-inventory.py terraform/tfoutput.json > ansible/inventory.ini
           MYSQL_IP=$(jq -r '.mysql_public_ip.value' terraform/tfoutput.json)
-          echo "mysql_host=$MYSQL_IP" > ansible/group_vars/all.yml
+          ansible-playbook -i inventory.ini playbook.yml --private-key ~/.ssh/id_rsa \
+          -e "mysql_host=$MYSQL_IP" -vv
+
 
 
       - name: Install Ansible
