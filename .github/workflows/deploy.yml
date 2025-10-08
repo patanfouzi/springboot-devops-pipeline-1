@@ -137,13 +137,7 @@ jobs:
 
       - name: Deploy Petclinic with dynamic MySQL
         working-directory: ./ansible
-        run: |
-          # Get MySQL public IP from Terraform output
-          MYSQL_IP=$(jq -r '.mysql_public_ip.value' terraform/tfoutput.json)
-          
-          # Run Ansible playbook with variables
-          ansible-playbook -i inventory.ini playbook.yml --private-key ~/.ssh/id_rsa \
-            -e "mysql_host=$MYSQL_IP mysql_user=petclinic_user mysql_password=Petclinic@123" -vv
+        run: ansible-playbook -i inventory.ini playbook.yml --private-key ~/.ssh/id_rsa
 
       - name: Show EC2 Public IP
         run: |
