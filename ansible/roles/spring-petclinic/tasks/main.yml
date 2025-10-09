@@ -24,7 +24,7 @@
 
 - name: Copy application.properties to app server
   copy:
-    src: files/application.properties
+    src:  application.properties
     dest: /opt/spring-petclinic/application.properties
     owner: ubuntu
     group: ubuntu
