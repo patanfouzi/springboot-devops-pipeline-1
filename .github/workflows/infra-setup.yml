@@ -25,7 +25,7 @@ jobs:
 
       - name: Clone Spring Petclinic and build
         run: |
-          git clone https://github.com/spring-projects/spring-petclinic.git
+          git clone https://github.com/mehziya0352/spring-petclinic.git
           cd spring-petclinic
           ./mvnw -B -DskipTests package
           mkdir -p ../ansible/roles/spring-petclinic/files
