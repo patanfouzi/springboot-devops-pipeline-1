@@ -33,11 +33,14 @@ jobs:
           cp src/main/resources/application.properties ../ansible/roles/spring-petclinic/files/application.properties
           ls -l ../ansible/roles/spring-petclinic/files/
 
-      - name: Upload JAR artifact
+      - name: Upload JAR and application.properties
         uses: actions/upload-artifact@v4
         with:
-          name: petclinic-jar
-          path: ansible/roles/spring-petclinic/files/spring-petclinic.jar
+          name: petclinic-files
+          path: |
+            ansible/roles/spring-petclinic/files/spring-petclinic.jar
+            ansible/roles/spring-petclinic/files/application.properties
+
 
   infra:
     name: Terraform Apply
