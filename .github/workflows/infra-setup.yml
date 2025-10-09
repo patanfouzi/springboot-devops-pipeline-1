@@ -1,4 +1,4 @@
-name: Minimal Secure DevOps Pipeline (JAR Deployment)
+name: Minimal Secure DevOps Pipeline 
 
 on:
   workflow_dispatch:
