@@ -1,4 +1,4 @@
-name: Mysql server deploy
+name: MySQL deploy
 
 on:
   workflow_dispatch:
