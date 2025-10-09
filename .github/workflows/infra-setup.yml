@@ -77,7 +77,7 @@ jobs:
 
       - name: Terraform apply
         working-directory: ./terraform
-        run: terraform destroy -auto-approve -lock=false -var="key_name=${{ secrets.AWS_KEY_NAME }}"
+        run: terraform apply -auto-approve -lock=false -var="key_name=${{ secrets.AWS_KEY_NAME }}"
 
       - name: Save Terraform output
         working-directory: ./terraform
