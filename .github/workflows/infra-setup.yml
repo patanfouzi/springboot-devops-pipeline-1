@@ -36,7 +36,7 @@ jobs:
       - name: Upload JAR and application.properties
         uses: actions/upload-artifact@v4
         with:
-          name: petclinic-files
+          name: petclinic-jar
           path: |
             ansible/roles/spring-petclinic/files/spring-petclinic.jar
             ansible/roles/spring-petclinic/files/application.properties
@@ -54,7 +54,7 @@ jobs:
       - name: Download JAR artifact
         uses: actions/download-artifact@v4
         with:
-          name: spring-petclinic.jar
+          name: petclinic-jar
           path: ansible/roles/spring-petclinic/files/
 
       - name: Setup Terraform
@@ -104,7 +104,7 @@ jobs:
       - name: Download JAR artifact
         uses: actions/download-artifact@v4
         with:
-          name: spring-petclinic.jar
+          name: petclinic-jar
           path: ansible/roles/spring-petclinic/files/
 
       - name: Download Terraform output
