@@ -43,7 +43,7 @@ jobs:
       # Step 6: Terraform apply
       - name: Terraform apply
         working-directory: ./terraform/mysql/
-        run: terraform apply -auto-approve -var="key_name=${{ secrets.KEY_NAME }}"
+        run: terraform apply -auto-approve -lock=false -var="key_name=${{ secrets.KEY_NAME }}"
 
       # Step 7: Save Terraform output directly
       - name: Save Terraform output
