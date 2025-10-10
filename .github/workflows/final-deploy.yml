@@ -194,7 +194,9 @@ jobs:
 
       - name: Run App Ansible playbook
         working-directory: ./ansible/
-        run: ansible-playbook -i inventory.ini playbooks/app.yml --private-key ~/.ssh/id_rsa -vv
+        run: |
+          export ANSIBLE_ROLES_PATH=./ansible/roles
+          ansible-playbook -i inventory.ini playbooks/app.yml --private-key ~/.ssh/id_rsa -vv
 
       - name: Show EC2 Public IP
         run: |
