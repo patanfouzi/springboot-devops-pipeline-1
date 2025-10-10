@@ -1,4 +1,4 @@
-name: App server deploy 
+name: Minimal Secure DevOps Pipeline 
 
 on:
   workflow_dispatch:
@@ -14,42 +14,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Step 2: Download MySQL IP artifact from MySQL workflow
-      - name: Download MySQL IP artifact
-        uses: actions/download-artifact@v4
+      - name: Set up Java
+        uses: actions/setup-java@v4
         with:
-          name: mysql-ip
-          path: ./artifacts/
+          distribution: temurin
+          java-version: '17'
 
-      # Step 3: Set MYSQL_IP environment variable
-      - name: Set MYSQL_IP environment variable
-        run: |
-          echo "MYSQL_IP=$(cat ./artifacts/mysql_ip.txt)" >> $GITHUB_ENV
-
-      # Step 4: Clone Spring Petclinic and build JAR
       - name: Clone Spring Petclinic and build
         run: |
           git clone https://github.com/mehziya0352/spring-petclinic.git
           cd spring-petclinic
-
-          # Replace placeholder in application.properties with actual MySQL IP
-          sed -i "s|<MYSQL_SERVER_IP>|${MYSQL_IP}|g" src/main/resources/application.properties
-
-          # Build JAR
           ./mvnw -B -DskipTests package
-
-          # Copy JAR and updated application.properties to ansible folder
           mkdir -p ../ansible/roles/spring-petclinic/files
           cp target/*.jar ../ansible/roles/spring-petclinic/files/spring-petclinic.jar
           cp src/main/resources/application.properties ../ansible/roles/spring-petclinic/files/application.properties
-
           ls -l ../ansible/roles/spring-petclinic/files/
 
-      # Step 5: Upload JAR and application.properties artifact
       - name: Upload JAR and application.properties
         uses: actions/upload-artifact@v4
         with:
@@ -57,6 +40,7 @@ jobs:
           path: |
             ansible/roles/spring-petclinic/files/spring-petclinic.jar
             ansible/roles/spring-petclinic/files/application.properties
+
 
   infra:
     name: Terraform Apply
@@ -66,6 +50,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Download JAR artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: petclinic-jar
+          path: ansible/roles/spring-petclinic/files/
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -85,18 +75,18 @@ jobs:
           ./create-backend.sh
 
       - name: Terraform init
-        working-directory: ./terraform
+        working-directory: ./terraform/app/
         run: terraform init -backend-config="bucket=${{ secrets.S3_BUCKET }}" -backend-config="key=secure-devops-pipeline-minimal/terraform.tfstate" -backend-config="region=${{ env.AWS_REGION }}"
 
       - name: Terraform apply
-        working-directory: ./terraform
-        run: terraform apply -auto-approve -lock=false -var="key_name=${{ secrets.AWS_KEY_NAME }}"
+        working-directory: ./terraform/app/
+        run: terraform destroy -auto-approve -lock=false -var="key_name=${{ secrets.AWS_KEY_NAME }}"
 
       - name: Save Terraform output
-        working-directory: ./terraform
+        working-directory: ./terraform/app/
         run: terraform output -json > tfoutput.json
 
-      - name: Upload Terraform output artifact
+      - name: Upload Terraform output
         uses: actions/upload-artifact@v4
         with:
           name: tfoutput
@@ -111,58 +101,49 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Step 1: Download the built JAR and application.properties
       - name: Download JAR artifact
         uses: actions/download-artifact@v4
         with:
           name: petclinic-jar
           path: ansible/roles/spring-petclinic/files/
 
-      # Step 2: Download Terraform output for EC2 IPs
       - name: Download Terraform output
         uses: actions/download-artifact@v4
         with:
           name: tfoutput
           path: terraform/
 
-      # Step 3: Install prerequisites
       - name: Install prerequisites
         run: |
           sudo apt-get update
           sudo apt-get install -y python3-pip jq
           pip3 install ansible
 
-      # Step 4: Add SSH key
       - name: Add SSH key
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
 
-      # Step 5: Disable host key checking
-      - name: Disable host key checking
+      - name: Disable host key checking   
         run: |
           echo "Host *" > ~/.ssh/config
           echo "    StrictHostKeyChecking no" >> ~/.ssh/config
           chmod 600 ~/.ssh/config
 
-      # Step 6: Wait for EC2 SSH to be ready
       - name: Wait for EC2 SSH to be ready
         run: sleep 30
 
-      # Step 7: Generate Ansible inventory
       - name: Generate Ansible inventory
         run: |
-          python3 scripts/tf-to-inventory.py terraform/tfoutput.json > ansible/inventory.ini
-          cat ansible/inventory.ini
+          python3 scripts/tf-to-inventory.py terraform/tfoutput.json > ansible/app/inventory.ini
+          cat ansible/app/inventory.ini
 
-      # Step 8: Run Ansible playbook to deploy JAR
       - name: Run Ansible playbook
-        working-directory: ./ansible
+        working-directory: ./ansible/app/
         run: ansible-playbook -i inventory.ini playbook.yml --private-key ~/.ssh/id_rsa -vv
 
-      # Step 9: Show deployed app public IP
       - name: Show EC2 Public IP
         run: |
           IP=$(jq -r '.ec2_public_ip.value' terraform/tfoutput.json)
-          echo "Spring Petclinic is available at: http://$IP:8080"
+          echo "Spring Petclinic will be available at: http://$IP:8080"
