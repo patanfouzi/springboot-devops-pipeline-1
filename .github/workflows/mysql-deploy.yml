@@ -45,17 +45,24 @@ jobs:
         working-directory: ./terraform/mysql/
         run: terraform apply -auto-approve -lock=false -var="key_name=${{ secrets.KEY_NAME }}"
 
-      # Step 7: Save Terraform output directly
-      - name: Save Terraform output
-        working-directory: ./terraform/mysql/
-        run: terraform output -json > tfoutput.json
-
-      # Step 8: Install prerequisites (Ansible + jq)
+      #  Install prerequisites (Ansible + jq)
       - name: Install prerequisites
         run: |
           sudo apt-get update
           sudo apt-get install -y python3-pip jq
           pip3 install ansible
+
+      - name: Save MySQL IP
+        working-directory: ./terraform/mysql/
+        run: |
+          terraform output -json > tfoutput.json
+          jq -r '.mysql_public_ip.value' tfoutput.json > mysql_ip.txt
+
+      - name: Upload MySQL IP artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mysql-ip
+          path: terraform/mysql/mysql_ip.txt
 
       # Step 9: Add SSH key
       - name: Add SSH key
