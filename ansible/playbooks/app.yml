@@ -2,5 +2,4 @@
   hosts: app
   become: true
   roles:
-    - docker
     - spring-petclinic
