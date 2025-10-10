@@ -116,6 +116,12 @@ jobs:
           distribution: temurin
           java-version: '17'
 
+      - name: Download Terraform output
+        uses: actions/download-artifact@v4
+        with:
+          name: tfoutput
+          path: terraform/
+
       - name: Clone Petclinic and update app.prop
         run: |
           git clone https://github.com/mehziya0352/spring-petclinic.git
@@ -135,11 +141,7 @@ jobs:
             ansible/roles/spring-petclinic/files/spring-petclinic.jar
             ansible/roles/spring-petclinic/files/application.properties
 
-      - name: Download Terraform output
-        uses: actions/download-artifact@v4
-        with:
-          name: tfoutput
-          path: terraform/
+      
   deploy:
     name: Deploy Spring Petclinic JAR
     runs-on: ubuntu-latest
