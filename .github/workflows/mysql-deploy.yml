@@ -90,5 +90,5 @@ jobs:
 
       # Step 13: Run Ansible playbook (directly)
       - name: Run Ansible playbook
-        working-directory: ./ansible/mysql
-        run: ansible-playbook -i inventory.ini playbook.yml --private-key ~/.ssh/id_rsa -vv
+        working-directory: ./ansible/
+        run: ansible-playbook -i ./ansible/mysql/inventory.ini setup.yml --private-key ~/.ssh/id_rsa -vv
