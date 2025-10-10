@@ -20,6 +20,14 @@
     state: present
     update_cache: yes
 
+- name: Change MySQL bind address
+  become: yes
+  lineinfile:
+    path: /etc/mysql/mysql.conf.d/mysqld.cnf
+    regexp: '^bind-address'
+    line: 'bind-address = 0.0.0.0'
+  notify: Restart MySQL
+
 - name: Set root password using socket
   become: yes
   community.mysql.mysql_user:
