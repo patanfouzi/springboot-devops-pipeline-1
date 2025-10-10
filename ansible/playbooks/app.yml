@@ -3,5 +3,4 @@
   become: true
   roles:
     - docker
-    - tomcat
     - spring-petclinic
