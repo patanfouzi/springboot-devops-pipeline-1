@@ -11,14 +11,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Step 2: Setup Terraform
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: "1.9.6"
 
+      # Step 3: Configure AWS credentials
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -26,61 +29,59 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
+      # Step 4: Setup Terraform backend (if applicable)
       - name: Setup Backend
         run: |
           chmod +x ./create-backend.sh
           ./create-backend.sh
 
+      # Step 5: Terraform init
       - name: Terraform init
         working-directory: ./terraform/mysql/
         run: terraform init
 
+      # Step 6: Terraform apply
       - name: Terraform apply
         working-directory: ./terraform/mysql/
         run: terraform apply -auto-approve -var="key_name=${{ secrets.KEY_NAME }}"
 
+      # Step 7: Save Terraform output directly
       - name: Save Terraform output
         working-directory: ./terraform/mysql/
         run: terraform output -json > tfoutput.json
 
-      - name: Upload Terraform output
-        uses: actions/upload-artifact@v4
-        with:
-          name: tfoutput
-          path: terraform/tfoutput.json
-
-      - name: Download Terraform output
-        uses: actions/download-artifact@v4
-        with:
-          name: tfoutput
-          path: terraform/mysql/
-
+      # Step 8: Install prerequisites (Ansible + jq)
       - name: Install prerequisites
         run: |
           sudo apt-get update
           sudo apt-get install -y python3-pip jq
           pip3 install ansible
 
+      # Step 9: Add SSH key
       - name: Add SSH key
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
 
-      - name: Disable host key checking   
+      # Step 10: Disable host key checking   
+      - name: Disable host key checking
         run: |
           echo "Host *" > ~/.ssh/config
           echo "    StrictHostKeyChecking no" >> ~/.ssh/config
           chmod 600 ~/.ssh/config
 
+      # Step 11: Wait for EC2 SSH to be ready
       - name: Wait for EC2 SSH to be ready
         run: sleep 30
 
+      # Step 12: Generate Ansible inventory using Terraform output
       - name: Generate Ansible inventory
         run: |
-          python3 scripts/tf-to-inventory.py terraform/tfoutput.json > ansible/inventory.ini
+          python3 scripts/tf-to-inventory.py terraform/mysql/tfoutput.json > ansible/inventory.ini
           cat ansible/inventory.ini
 
+      # Step 13: Run Ansible playbook (directly)
       - name: Run Ansible playbook
         working-directory: ./ansible/
         run: ansible-playbook -i inventory.ini setup.yml --private-key ~/.ssh/id_rsa -vv
