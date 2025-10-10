@@ -9,6 +9,8 @@ env:
 jobs:
   mysql-setup:
     runs-on: ubuntu-latest
+    outputs:
+      mysql_ip: ${{ steps.mysql-ip.outputs.mysql_ip }}
 
     steps:
       # Step 1: Checkout repository
