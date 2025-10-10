@@ -197,6 +197,6 @@ jobs:
 
       - name: Show EC2 Public IP
         run: |
-          IP=$(jq -r '.ec2_public_ip.value' terraform/tfoutput.json)
+          IP=$(jq -r '.app_public_ip.value' terraform/tfoutput.json)
           echo "Spring Petclinic will be available at: http://$IP:8080"
 
