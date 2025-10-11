@@ -136,8 +136,8 @@ jobs:
 
       - name: Generate Ansible inventory
         run: |
-          python3 scripts/tf-to-inventory.py terraform/tfoutput.json > ansible/app/inventory.ini
-          cat ansible/app/inventory.ini
+          python3 scripts/tf-to-inventory.py terraform/tfoutput.json > ansible/inventory.ini
+          cat ansible/inventory.ini
 
       - name: Run Ansible playbook
         working-directory: ./ansible/
