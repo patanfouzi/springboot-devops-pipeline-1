@@ -100,7 +100,9 @@ jobs:
       # Step 13: Run Mysql Ansible playbook (directly)
       - name: Run MySQL Ansible playbook
         working-directory: ./ansible/
-        run: ansible-playbook -i inventory.ini playbooks/mysql.yml --private-key ~/.ssh/id_rsa -vv
+        run: |
+          export ANSIBLE_ROLES_PATH=./roles
+          ansible-playbook -i inventory.ini playbooks/mysql.yml --private-key ~/.ssh/id_rsa -vv
 
   build-jar:
     name: Build Spring Petclinic JAR
