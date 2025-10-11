@@ -75,15 +75,15 @@ jobs:
           ./create-backend.sh
 
       - name: Terraform init
-        working-directory: ./terraform/app/
+        working-directory: ./terraform/
         run: terraform init -backend-config="bucket=${{ secrets.S3_BUCKET }}" -backend-config="key=secure-devops-pipeline-minimal/terraform.tfstate" -backend-config="region=${{ env.AWS_REGION }}"
 
       - name: Terraform apply
-        working-directory: ./terraform/app/
+        working-directory: ./terraform/
         run: terraform destroy -auto-approve -lock=false -var="key_name=${{ secrets.AWS_KEY_NAME }}"
 
       - name: Save Terraform output
-        working-directory: ./terraform/app/
+        working-directory: ./terraform/
         run: terraform output -json > tfoutput.json
 
       - name: Upload Terraform output
@@ -140,7 +140,7 @@ jobs:
           cat ansible/app/inventory.ini
 
       - name: Run Ansible playbook
-        working-directory: ./ansible/app/
+        working-directory: ./ansible/
         run: ansible-playbook -i inventory.ini playbook.yml --private-key ~/.ssh/id_rsa -vv
 
       - name: Show EC2 Public IP
