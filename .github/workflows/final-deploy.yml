@@ -67,7 +67,7 @@ jobs:
       - name: Save MySQL IP
         id: mysql-ip
         run: |
-          MYSQL_IP=$(jq -r '.mysql_public_ip.value[]' terraform/tfoutput.json)
+          MYSQL_IP=$(jq -r '.mysql_private_ip.value[]' terraform/tfoutput.json)
           echo "mysql_ip=$MYSQL_IP" >> $GITHUB_OUTPUT
 
 
