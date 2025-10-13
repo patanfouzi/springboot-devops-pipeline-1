@@ -29,6 +29,48 @@
     owner: ubuntu
     group: ubuntu
     mode: '0644'
+- name: Copy Dockerfile
+  copy:
+    src: files/Dockerfile
+    dest: /opt/spring-petclinic/Dockerfile
+    owner: ubuntu
+    group: ubuntu
+    mode: '0644'
+
+- name: Stop any running Petclinic container
+  become: yes
+  command: docker stop petclinic-app
+  ignore_errors: yes
+
+- name: Remove old Petclinic container if exists
+  become: yes
+  command: docker rm petclinic-app
+  ignore_errors: yes
+
+- name: Build Spring Petclinic Docker image
+  become: yes
+  command: docker build -t petclinic-app .
+  args:
+    chdir: /opt/spring-petclinic/
+
+- name: Run Petclinic container
+  become: yes
+  docker_container:
+    name: petclinic-app
+    image: petclinic-app
+    state: started
+    restart_policy: always
+    ports:
+      - "8080:8080"
+
+- name: Verify running containers
+  become: yes
+  command: docker ps
+  register: docker_ps_output
+
+- name: Show running container info
+  debug:
+    var: docker_ps_output.stdout
 
 
 - import_tasks: systemd.yml
