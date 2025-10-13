@@ -45,7 +45,7 @@ jobs:
       # Step 6: Terraform apply
       - name: Terraform apply
         working-directory: ./terraform/
-        run: terraform apply -auto-approve -lock=false -var="key_name=${{ secrets.KEY_NAME }}"
+        run: terraform destroy -auto-approve -lock=false -var="key_name=${{ secrets.KEY_NAME }}"
 
       - name: Save Terraform output
         working-directory: ./terraform/
@@ -110,6 +110,8 @@ jobs:
     needs: mysql-setup
     env:
       MYSQL_IP: ${{ needs.mysql-setup.outputs.mysql_ip }}
+      SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
     steps:
       - name: Checkout repository
@@ -126,6 +128,14 @@ jobs:
         with:
           name: tfoutput
           path: terraform/
+
+      - name: SonarCloud Scan
+        run: |
+          ./mvnw clean verify sonar:sonar \
+            -Dsonar.projectKey=mehziya0352_springboot-devops-pipeline \
+            -Dsonar.organization=mehziya0352 \
+            -Dsonar.host.url=$SONAR_HOST_URL \
+            -Dsonar.login=$SONAR_TOKEN
 
       - name: Clone Petclinic and update app.prop
         run: |
