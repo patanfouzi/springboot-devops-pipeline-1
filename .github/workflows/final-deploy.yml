@@ -143,6 +143,8 @@ jobs:
 
       - name: SonarCloud Scan
         run: |
+          git clone https://github.com/mehziya0352/spring-petclinic.git
+          cd spring-petclinic
           ./mvnw clean verify sonar:sonar \
             -Dsonar.projectKey=mehziya0352_springboot-devops-pipeline \
             -Dsonar.organization=mehziya0352 \
