@@ -1,11 +1,4 @@
 ---
-- name: Install Java 17
-  become: yes
-  apt:
-    name: openjdk-17-jre
-    state: present
-    update_cache: yes
-
 - name: Ensure app directory exists
   file:
     path: /opt/spring-petclinic
@@ -72,5 +65,3 @@
   debug:
     var: docker_ps_output.stdout
 
-
-- import_tasks: systemd.yml
