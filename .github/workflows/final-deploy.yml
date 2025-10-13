@@ -138,7 +138,7 @@ jobs:
           mkdir -p ../ansible/roles/spring-petclinic/files
           cp src/main/resources/application.properties ../ansible/roles/spring-petclinic/files/application.properties
           ./mvnw -B -DskipTests package
-          ./mvnw clean verify sonar:sonar \
+          mvn clean verify sonar:sonar \
             -Dsonar.projectKey=mehziya0352_springboot-devops-pipeline \
             -Dsonar.organization=mehziya0352 \
             -Dsonar.host.url=$SONAR_HOST_URL \
