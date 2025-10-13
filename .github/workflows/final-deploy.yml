@@ -129,13 +129,6 @@ jobs:
           name: tfoutput
           path: terraform/
 
-      - name: SonarCloud Scan
-        run: |
-          ./mvnw clean verify sonar:sonar \
-            -Dsonar.projectKey=mehziya0352_springboot-devops-pipeline \
-            -Dsonar.organization=mehziya0352 \
-            -Dsonar.host.url=$SONAR_HOST_URL \
-            -Dsonar.login=$SONAR_TOKEN
 
       - name: Clone Petclinic and update app.prop
         run: |
@@ -147,6 +140,14 @@ jobs:
           ./mvnw -B -DskipTests package
           cp target/*.jar ../ansible/roles/spring-petclinic/files/spring-petclinic.jar
           ls -l ../ansible/roles/spring-petclinic/files/
+
+      - name: SonarCloud Scan
+        run: |
+          ./mvnw clean verify sonar:sonar \
+            -Dsonar.projectKey=mehziya0352_springboot-devops-pipeline \
+            -Dsonar.organization=mehziya0352 \
+            -Dsonar.host.url=$SONAR_HOST_URL \
+            -Dsonar.login=$SONAR_TOKEN
 
       - name: Upload JAR and application.properties
         uses: actions/upload-artifact@v4
