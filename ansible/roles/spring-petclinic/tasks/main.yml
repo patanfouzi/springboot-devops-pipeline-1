@@ -46,6 +46,17 @@
   args:
     chdir: /opt/spring-petclinic/
 
+- name: Install Trivy
+  become: yes
+  shell: |
+    apt-get update
+    apt-get install -y wget
+    wget https://github.com/aquasecurity/trivy/releases/latest/download/trivy_0.67.2_Linux-64bit.deb
+    dpkg -i trivy_0.67.2_Linux-64bit.deb
+  args:
+    creates: /usr/local/bin/trivy
+
+
 - name: Run Trivy Image Scan
   shell: |
     trivy image --format table \
