@@ -138,13 +138,17 @@ jobs:
           mkdir -p ../ansible/roles/spring-petclinic/files
           cp src/main/resources/application.properties ../ansible/roles/spring-petclinic/files/application.properties
           ./mvnw -B -DskipTests package
-          mvn clean verify sonar:sonar \
-            -Dsonar.projectKey=mehziya0352_springboot-devops-pipeline \
-            -Dsonar.organization=mehziya0352 \
-            -Dsonar.host.url=$SONAR_HOST_URL \
-            -Dsonar.login=$SONAR_TOKEN
           cp target/*.jar ../ansible/roles/spring-petclinic/files/spring-petclinic.jar
           ls -l ../ansible/roles/spring-petclinic/files/
+
+      - name: Run Trivy FS Scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: fs
+          scan-ref: .
+          format: table
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
 
       - name: Upload JAR and application.properties
         uses: actions/upload-artifact@v4
