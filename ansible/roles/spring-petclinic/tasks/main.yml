@@ -46,6 +46,14 @@
   args:
     chdir: /opt/spring-petclinic/
 
+- name: Run Trivy Image Scan
+  uses: aquasecurity/trivy-action@master
+  with:
+    image-ref: petclinic-app:latest
+    format: table
+    severity: HIGH,CRITICAL
+    ignore-unfixed: true
+
 - name: Run Petclinic container
   become: yes
   docker_container:
