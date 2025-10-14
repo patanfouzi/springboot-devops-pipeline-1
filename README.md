@@ -193,7 +193,7 @@ This ensures **zero manual inventory management** after Terraform apply.
 
 2. **Generate Dynamic Inventory**
 
-   * Runs `tf-to-inventory.sh` to fetch IPs
+   * Runs `tf-to-inventory.py` to fetch IPs
 
 3. **Configure MySQL Server**
 
@@ -213,12 +213,19 @@ This ensures **zero manual inventory management** after Terraform apply.
    * Scans JAR and Docker image for vulnerabilities
 
 ---
+# Environment Variables
+| Secret                  | Description                     |
+| ----------------------- | ------------------------------- |
+| `AWS_ACCESS_KEY_ID`     | AWS access key for provisioning |
+| `AWS_SECRET_ACCESS_KEY` | AWS secret key                  |
+| `SSH_PRIVATE_KEY`       | PEM key for EC2 access          |
+| `KEY_NAME`              | AWS key pair name               |
+
 
 🌐 Accessing the Application
 
-After successful deployment, the workflow prints the App server’s public IP:
-
-Application will be available at: http://<APP_PUBLIC_IP>:8080
+* After successful deployment, the workflow prints the App server’s public IP:
+* Application will be available at: http://<APP_PUBLIC_IP>:8080
 
 ## 🧰 Tools & Technologies
 
@@ -241,23 +248,16 @@ You can test this setup locally using your own AWS credentials:
 
 AWS account with an existing EC2 key pair.
 
-GitHub repository with the following secrets configured:
+# GitHub repository with the following secrets configured:
 
-AWS_ACCESS_KEY_ID
-
-AWS_SECRET_ACCESS_KEY
-
-SSH_PRIVATE_KEY
-
-KEY_NAME
-
-Terraform ≥ 1.9.0
-
-Ansible ≥ 2.16
-
-Python ≥ 3.8
-
-AWS CLI configured (for backend setup)
+* AWS_ACCESS_KEY_ID
+* AWS_SECRET_ACCESS_KEY
+* SSH_PRIVATE_KEY
+* KEY_NAME
+* Terraform ≥ 1.9.0
+* Ansible ≥ 2.16
+* Python ≥ 3.8
+* AWS CLI configured (for backend setup)
 
 ```bash
 terraform init
@@ -297,10 +297,4 @@ terraform destroy -auto-approve
 * Add **Monitoring & Alerts** using Prometheus + Grafana
 
 ---
-
-## 👤 Author
-
-**Mehziya Shaik**
-DevOps Engineer | AWS | Terraform | Ansible | CI/CD | Docker | Kubernetes
-🔗 [GitHub Profile](https://github.com/mehziya0352)
 
