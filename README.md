@@ -213,7 +213,7 @@ This ensures **zero manual inventory management** after Terraform apply.
    * Scans JAR and Docker image for vulnerabilities
 
 ---
-# Environment Variables
+## Environment Variables
 | Secret                  | Description                     |
 | ----------------------- | ------------------------------- |
 | `AWS_ACCESS_KEY_ID`     | AWS access key for provisioning |
@@ -248,7 +248,7 @@ You can test this setup locally using your own AWS credentials:
 
 AWS account with an existing EC2 key pair.
 
-# GitHub repository with the following secrets configured:
+## GitHub repository with the following secrets configured:
 
 * AWS_ACCESS_KEY_ID
 * AWS_SECRET_ACCESS_KEY
