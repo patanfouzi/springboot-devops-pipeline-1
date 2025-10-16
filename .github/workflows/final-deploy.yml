@@ -132,8 +132,8 @@ jobs:
 
       - name: Clone Petclinic and update app.prop and sonar scan
         run: |
-          git clone https://github.com/mehziya0352/spring-petclinic.git
-          cd spring-petclinic
+          git clone https://github.com/patanfouzi/Expenses-Tracker-WebApp.git
+          cd Expenses-Tracker-WebApp
           sed -i "s|<MYSQL_SERVER_IP>|${MYSQL_IP}|g" src/main/resources/application.properties
           mkdir -p ../ansible/roles/spring-petclinic/files
           cp src/main/resources/application.properties ../ansible/roles/spring-petclinic/files/application.properties
