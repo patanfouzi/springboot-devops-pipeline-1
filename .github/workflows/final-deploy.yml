@@ -45,7 +45,7 @@ jobs:
       # Step 6: Terraform apply
       - name: Terraform apply
         working-directory: ./terraform/
-        run: terraform apply -auto-approve -lock=false -var="key_name=${{ secrets.KEY_NAME }}"
+        run: terraform destroy -auto-approve -lock=false -var="key_name=${{ secrets.KEY_NAME }}"
 
       - name: Save Terraform output
         working-directory: ./terraform/
@@ -137,7 +137,7 @@ jobs:
           sed -i "s|<MYSQL_SERVER_IP>|${MYSQL_IP}|g" src/main/resources/application.properties
           mkdir -p ../ansible/roles/spring-petclinic/files
           cp src/main/resources/application.properties ../ansible/roles/spring-petclinic/files/application.properties
-          ./mvnw -B -DskipTests package
+          mvn clean -DskipTests package
           cp target/*.jar ../ansible/roles/spring-petclinic/files/spring-petclinic.jar
           ls -l ../ansible/roles/spring-petclinic/files/
 
