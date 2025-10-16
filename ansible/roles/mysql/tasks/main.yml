@@ -41,7 +41,7 @@
 - name: Create petclinic database
   become: yes
   community.mysql.mysql_db:
-    name: petclinic_db
+    name: expenses_tracker_db
     state: present
     login_user: root
     login_password: root
@@ -51,9 +51,9 @@
 - name: Create petclinic user for remote access
   become: yes
   community.mysql.mysql_user:
-    name: petclinic_user
-    password: Petclinic@123
-    priv: "petclinic_db.*:ALL"
+    name: my_user
+    password: Root@123
+    priv: "expenses_tracker_db.*:ALL"
     host: "%"
     login_user: root
     login_password: root
