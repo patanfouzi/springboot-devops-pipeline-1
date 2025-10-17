@@ -3,4 +3,4 @@
   become: true
   roles:
     - docker
-    - spring-petclinic
+    - app
