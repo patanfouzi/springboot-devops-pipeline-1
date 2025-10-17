@@ -128,12 +128,12 @@ jobs:
 
       - name: Clone Repo and update app.prop
         run: |
-          git clone https://github.com/patanfouzi/Expenses-Tracker-WebApp.git
-          cd Expenses-Tracker-WebApp
+          git clone https://github.com/patanfouzi/Springboot-BankApp.git
+          cd Springboot-BankApp
           sed -i "s|<MYSQL_SERVER_IP>|${MYSQL_IP}|g" src/main/resources/application.properties
           mkdir -p ../ansible/roles/app/files
           cp src/main/resources/application.properties ../ansible/roles/app/files/application.properties
-          mvn clean package -DskipTests 
+          ./mvnw -B -DskipTests package 
           cp target/*.jar ../ansible/roles/app/files/expenses-tracker.jar
           ls -l ../ansible/roles/app/files/
 
