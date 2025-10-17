@@ -133,7 +133,7 @@ jobs:
           sed -i "s|<MYSQL_SERVER_IP>|${MYSQL_IP}|g" src/main/resources/application.properties
           mkdir -p ../ansible/roles/app/files
           cp src/main/resources/application.properties ../ansible/roles/app/files/application.properties
-          ./mvnw -B -DskipTests package 
+          mvn clean package -DskipTests 
           cp target/*.jar ../ansible/roles/app/files/expenses-tracker.jar
           ls -l ../ansible/roles/app/files/
 
