@@ -1,16 +1,16 @@
 ---
 - name: Ensure app directory exists
   file:
-    path: /opt/spring-petclinic
+    path: /opt/app
     state: directory
     mode: '0755'
     owner: ubuntu
     group: ubuntu
 
-- name: Copy Spring Petclinic JAR to server
+- name: Copy Spring JAR to server
   copy:
-    src: files/spring-petclinic.jar
-    dest: /opt/spring-petclinic/spring-petclinic.jar
+    src: files/expenses-tracker.jar
+    dest: /opt/app/expenses-tracker.jar
     owner: ubuntu
     group: ubuntu
     mode: '0755'
@@ -18,33 +18,33 @@
 - name: Copy application.properties to app server
   copy:
     src:  files/application.properties
-    dest: /opt/spring-petclinic/application.properties
+    dest: /opt/app/application.properties
     owner: ubuntu
     group: ubuntu
     mode: '0644'
 - name: Copy Dockerfile
   copy:
     src: files/Dockerfile
-    dest: /opt/spring-petclinic/Dockerfile
+    dest: /opt/app/Dockerfile
     owner: ubuntu
     group: ubuntu
     mode: '0644'
 
-- name: Stop any running Petclinic container
+- name: Stop any running app container
   become: yes
-  command: docker stop petclinic-app
+  command: docker stop spring-app
   ignore_errors: yes
 
-- name: Remove old Petclinic container if exists
+- name: Remove old container if exists
   become: yes
-  command: docker rm petclinic-app
+  command: docker rm spring-app
   ignore_errors: yes
 
-- name: Build Spring Petclinic Docker image
+- name: Build Spring Docker image
   become: yes
-  command: docker build -t petclinic-app .
+  command: docker build -t spring-app .
   args:
-    chdir: /opt/spring-petclinic/
+    chdir: /opt/app/
 
 - name: Install Trivy
   become: yes
@@ -66,11 +66,11 @@
   register: trivy_scan
   ignore_errors: yes
 
-- name: Run Petclinic container
+- name: Run app container
   become: yes
   docker_container:
-    name: petclinic-app
-    image: petclinic-app
+    name: spring-app
+    image: spring-app
     state: started
     restart_policy: always
     ports:
