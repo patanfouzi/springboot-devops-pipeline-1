@@ -38,22 +38,22 @@
     priv: '*.*:ALL,GRANT'
     state: present
 
-- name: Create petclinic database
+- name: Create database
   become: yes
   community.mysql.mysql_db:
-    name: expenses_tracker
+    name: bankappdb
     state: present
     login_user: root
     login_password: root
     login_host: localhost
     login_unix_socket: /var/run/mysqld/mysqld.sock
 
-- name: Create petclinic user for remote access
+- name: Create user for remote access
   become: yes
   community.mysql.mysql_user:
     name: root
     password: Test@123
-    priv: "expenses_tracker.*:ALL"
+    priv: "bankappdb.*:ALL"
     host: "%"
     login_user: root
     login_password: root
