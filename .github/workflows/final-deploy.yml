@@ -137,8 +137,8 @@ jobs:
           sed -i "s|<MYSQL_SERVER_IP>|${MYSQL_IP}|g" src/main/resources/application.properties
           mkdir -p ../ansible/roles/spring-petclinic/files
           cp src/main/resources/application.properties ../ansible/roles/spring-petclinic/files/application.properties
-          mvn clean -DskipTests package
-          cp target/*.jar ../ansible/roles/spring-petclinic/files/spring-petclinic.jar
+          mvn clean package -DskipTests 
+          cp target/*.jar ../ansible/roles/spring-petclinic/files/expenses-tracker.jar
           ls -l ../ansible/roles/spring-petclinic/files/
 
       - name: Run Trivy FS Scan
@@ -155,7 +155,7 @@ jobs:
         with:
           name: petclinic-jar
           path: |
-            ansible/roles/spring-petclinic/files/spring-petclinic.jar
+            ansible/roles/spring-petclinic/files/expenses-tracker.jar
             ansible/roles/spring-petclinic/files/application.properties
 
       
