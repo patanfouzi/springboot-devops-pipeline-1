@@ -1,4 +1,4 @@
-- name: Configure app server and deploy Petclinic
+- name: Configure app server and deploy App
   hosts: app
   become: true
   roles:
